@@ -1,10 +1,78 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Decoheron</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decoheron.com — Coming Soon</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Fullscreen background area */
+        .hero-bg {
+            height: 100vh;
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+
+            /* Add your wallpaper here */
+            /* Example: background-image: url('your-wallpaper.jpg'); */
+        }
+
+        /* Dark overlay for readability */
+        .overlay {
+            background: rgba(0, 0, 0, 0.55);
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Text styling */
+        .hero-content {
+            color: #ffffff;
+        }
+
+        .brand-title {
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .tagline {
+            font-size: 1.25rem;
+            opacity: 0.85;
+        }
+
+        @media (max-width: 576px) {
+            .brand-title {
+                font-size: 2.2rem;
+            }
+            .tagline {
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <h1>Decoheron</h1>
+
+    <div class="hero-bg d-flex align-items-center justify-content-center">
+        <div class="overlay d-flex align-items-center justify-content-center">
+            <div class="container text-center hero-content px-4">
+                <h1 class="brand-title">Decoheron</h1>
+                <p class="tagline mt-3">Quantum Risk Evaluation</p>
+
+                <h3 class="mt-5 fw-light">Coming Soon</h3>
+
+                <div class="mt-4">
+                    <p class="small opacity-75">Stay tuned for breakthroughs in quantum‑powered financial intelligence.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
