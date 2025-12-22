@@ -234,7 +234,7 @@ function animate() {
   const t = (performance.now() - start) / 1000;
 
   uniforms.uTime.value = t;
-  uniforms.uCollapse.value = Math.min(1.0, t / 12.0);
+  uniforms.uCollapse.value = Math.min(1.0, t / 17.0);
 
   composer.render();
 }
