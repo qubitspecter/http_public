@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Decoherence Demo 5 – Entanglement Lines</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #020617;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x020617, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+camera.position.set(0, 0, 12);
+camera.lookAt(0, 0, 0);
+
+// nodes
+const nodeGeo = new THREE.SphereGeometry(0.15, 20, 20);
+const nodeMat = new THREE.MeshBasicMaterial({
+  color: 0x00e5ff
+});
+
+const nodes = [];
+const pairs = [];
+const RING_COUNT = 12;
+const radialRadius = 3.2;
+
+for (let i = 0; i < RING_COUNT; i++) {
+  const angle = (i / RING_COUNT) * Math.PI * 2.0;
+  const x = Math.cos(angle) * radialRadius;
+  const y = Math.sin(angle) * radialRadius * 0.6;
+  const node = new THREE.Mesh(nodeGeo, nodeMat.clone());
+  node.position.set(x, y, 0);
+  scene.add(node);
+  nodes.push(node);
+}
+
+// connect nodes into entangled pairs (i and i+RING_COUNT/2)
+for (let i = 0; i < RING_COUNT / 2; i++) {
+  const a = nodes[i];
+  const b = nodes[i + RING_COUNT / 2];
+
+  const curve = new THREE.QuadraticBezierCurve3(
+    a.position.clone(),
+    new THREE.Vector3(0, 0, (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random())),
+    b.position.clone()
+  );
+  const points = curve.getPoints(200);
+  const lineGeo = new THREE.BufferGeometry().setFromPoints(points);
+
+  const lineMat = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uCollapse: { value: 0 },
+      uColor: { value: new THREE.Color(0x00e5ff) },
+      uSeed: { value: Math.random() * 1000.0 }
+    },
+    vertexShader: `
+      uniform float uCollapse;
+      varying float vPos;
+      void main() {
+        vPos = position.z;
+        vec3 p = position;
+        float breakOffset = uCollapse * 0.8;
+        p.z += breakOffset * sin(position.y * 4.0 + position.x * 3.0);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+      }
+    `,
+    fragmentShader: `
+      precision highp float;
+      uniform float uTime;
+      uniform float uCollapse;
+      uniform vec3 uColor;
+      uniform float uSeed;
+      varying float vPos;
+
+      float rand(float x) {
+        return fract(sin(x * 12.9898 + uSeed) * 43758.5453);
+      }
+
+      void main() {
+        float t = uTime * 1.5;
+        float flicker = 0.6 + 0.4 * sin(t * 10.0 + rand(vPos)*6.2831);
+        float breakMask = smoothstep(0.0, 1.0, abs(sin(vPos * 1.5 + uTime * 0.7)));
+
+        float deco = mix(1.0, breakMask, uCollapse);
+        float alpha = mix(0.9, 0.1, uCollapse * breakMask);
+
+        vec3 col = uColor;
+        col *= flicker * deco;
+
+        gl_FragColor = vec4(col, alpha);
+        if (gl_FragColor.a < 0.05) discard;
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  const line = new THREE.Line(lineGeo, lineMat);
+  scene.add(line);
+  pairs.push({ a, b, line, mat: lineMat });
+}
+
+// Postprocessing
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  1.8, 0.4, 0.9
+);
+composer.addPass(bloom);
+
+function resize() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  renderer.setSize(w, h);
+  composer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+let start = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = (performance.now() - start) / 1000;
+
+  const collapse = Math.min(1.0, t / 10.0);
+
+  // rotate ring
+  scene.rotation.z = t * 0.2;
+
+  // pulse node brightness
+  nodes.forEach((node, idx) => {
+    const phase = (idx / nodes.length) * Math.PI * 2.0;
+    const pulse = 0.4 + 0.6 * Math.sin(t * 4.0 + phase);
+    const c = new THREE.Color(0x00e5ff);
+    c.multiplyScalar(pulse);
+    node.material.color.copy(c);
+  });
+
+  // update line uniforms
+  pairs.forEach(p => {
+    p.mat.uniforms.uTime.value = t;
+    p.mat.uniforms.uCollapse.value = collapse;
+  });
+
+  composer.render();
+}
+animate();
+</script>
+</body>
+</html>
