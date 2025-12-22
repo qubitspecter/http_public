@@ -99,9 +99,12 @@ const material = new THREE.ShaderMaterial({
       float strength = smoothstep(1.8, 0.0, length(finalPos));
       vStrength = strength;
 
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(finalPos, 1.0);
-      gl_PointSize = mix(1.5, 4.0, strength) * (1.0 + uCollapse * 0.8);
-      gl_PointSize *= (300.0 / -mvPosition.z);
+     vec4 mvPosition = modelViewMatrix * vec4(finalPos, 1.0);
+gl_Position = projectionMatrix * mvPosition;
+
+gl_PointSize = mix(1.5, 4.0, strength) * (1.0 + uCollapse * 0.8);
+gl_PointSize *= (300.0 / -mvPosition.z);
+
     }
   `,
   fragmentShader: `
