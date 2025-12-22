@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Decoherence Demo 4 – Superposition Blur</title>
+<style>
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+    background: #020617;
+  }
+  canvas { display: block; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+import { EffectComposer } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+const canvas = document.getElementById('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x020617, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 50);
+camera.position.set(0, 0, 8);
+
+// central "state" geometry
+const baseGeo = new THREE.TorusKnotGeometry(1.2, 0.35, 256, 32);
+const ghostCount = 7;
+
+const uniforms = {
+  uTime: { value: 0 },
+  uCollapse: { value: 0 },
+  uColor: { value: new THREE.Color(0x00e5ff) }
+};
+
+const material = new THREE.ShaderMaterial({
+  uniforms,
+  vertexShader: `
+    uniform float uTime;
+    uniform float uCollapse;
+    varying vec3 vWorldPos;
+
+    void main() {
+      vec3 pos = position;
+
+      float noise = sin(dot(pos.xyz, vec3(4.3, 3.5, 7.1)) + uTime * 2.0);
+      pos += normal * noise * 0.12 * (1.0 - uCollapse);
+
+      vec4 worldPos = modelMatrix * vec4(pos, 1.0);
+      vWorldPos = worldPos.xyz;
+      gl_Position = projectionMatrix * viewMatrix * worldPos;
+    }
+  `,
+  fragmentShader: `
+    precision highp float;
+    uniform float uTime;
+    uniform float uCollapse;
+    uniform vec3 uColor;
+    varying vec3 vWorldPos;
+
+    void main() {
+      float depth = length(vWorldPos.xy);
+      float glow = exp(-depth * 1.6);
+
+      float grain = fract(sin(dot(vWorldPos.xy, vec2(12.9898,78.233)))*43758.5453);
+      float fuzz = mix(0.6 + grain * 0.6, 1.0, uCollapse);
+
+      vec3 col = uColor;
+      col *= fuzz * (0.4 + glow * 0.8);
+      col += vec3(0.3, 1.0, 1.0) * pow(glow, 3.0) * 0.9;
+
+      gl_FragColor = vec4(col, 1.0);
+    }
+  `,
+  transparent: true
+});
+
+// create multiple ghosted instances
+const group = new THREE.Group();
+scene.add(group);
+
+for (let i = 0; i < ghostCount; i++) {
+  const mesh = new THREE.Mesh(baseGeo, material);
+  group.add(mesh);
+}
+
+// Postprocessing
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+const bloom = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  1.5, 0.4, 0.85
+);
+composer.addPass(bloom);
+
+function resize() {
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  renderer.setSize(w, h);
+  composer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', resize);
+resize();
+
+let start = performance.now();
+
+function animate() {
+  requestAnimationFrame(animate);
+  const t = (performance.now() - start) / 1000;
+  uniforms.uTime.value = t;
+  uniforms.uCollapse.value = Math.min(1.0, t / 10.0);
+
+  // rotate main group
+  group.rotation.y = t * 0.4;
+  group.rotation.x = Math.sin(t * 0.3) * 0.4;
+
+  // offset ghost states
+  const collapse = uniforms.uCollapse.value;
+  group.children.forEach((mesh, i) => {
+    const f = (i / (ghostCount - 1)) - 0.5; // -0.5..0.5
+    const spread = (1.0 - collapse) * 1.5;
+    mesh.position.set(
+      f * spread,
+      Math.sin(f * 3.14) * spread * 0.3,
+      f * spread * 0.4
+    );
+    mesh.material = material;
+    mesh.renderOrder = i;
+    mesh.material.opacity = 0.18 + (1.0 - Math.abs(f)) * 0.18 + collapse * 0.1;
+  });
+
+  composer.render();
+}
+animate();
+</script>
+</body>
+</html>
