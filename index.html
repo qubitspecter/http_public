@@ -247,16 +247,16 @@ function animate() {
 
 if (t < 10.0) {
     // Phase 1: extreme noise
-    collapse = 8.0;  
-} 
-else if (t < 20.0) {
-    // Phase 2: chaotic wave (fade from 8 → 1)
-    const p = (t - 10.0) / 10.0;   // 0 → 1
-    collapse = 8.0 - 7.0 * p;      // 8 → 1
+    collapse = 6.0;  
 } 
 else if (t < 30.0) {
-    // Phase 3: crisp wave (fade from 1 → 0)
+    // Phase 2: chaotic wave (fade from 8 → 1)
     const p = (t - 20.0) / 10.0;   // 0 → 1
+    collapse = 6.0 - 5.0 * p;      // 8 → 1
+} 
+else if (t < 40.0) {
+    // Phase 3: crisp wave (fade from 1 → 0)
+    const p = (t - 30.0) / 10.0;   // 0 → 1
     collapse = 1.0 - p;            // 1 → 0
 } 
 else {
