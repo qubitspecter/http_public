@@ -243,27 +243,28 @@ function animate() {
   // uniforms.uCollapse.value = Math.min(1.0, t / 17.0); //normal
   // uniforms.uCollapse.value = t / 12.0; // total chaos
 
-  let collapse;
+ let collapse;
 
 if (t < 10.0) {
     // Phase 1: extreme noise
-    collapse = 6.0;  
-} 
+    collapse = 6.0;
+}
 else if (t < 30.0) {
-    // Phase 2: chaotic wave (fade from 8 → 1)
-    const p = (t - 20.0) / 10.0;   // 0 → 1
-    collapse = 6.0 - 5.0 * p;      // 8 → 1
-} 
-else if (t < 40.0) {
-    // Phase 3: crisp wave (fade from 1 → 0)
-    const p = (t - 30.0) / 10.0;   // 0 → 1
+    // Phase 2: chaotic wave (fade from 6 → 1 over 20 seconds)
+    const p = (t - 10.0) / 20.0;   // 0 → 1
+    collapse = 6.0 - 5.0 * p;      // 6 → 1
+}
+else if (t < 60.0) {
+    // Phase 3: crisp wave (fade from 1 → 0 over 30 seconds)
+    const p = (t - 30.0) / 30.0;   // 0 → 1
     collapse = 1.0 - p;            // 1 → 0
-} 
+}
 else {
     collapse = 0.0;
 }
 
 uniforms.uCollapse.value = collapse;
+
 
 
   composer.render();
