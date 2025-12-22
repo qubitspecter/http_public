@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quantum Wave Interference</title>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        background: #020617;
+        overflow: hidden;
+    }
+    .wave {
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        opacity: 0.4;
+        animation: drift 12s infinite linear;
+    }
+    .wave:nth-child(2) {
+        animation-duration: 18s;
+        opacity: 0.25;
+    }
+    @keyframes drift {
+        from { transform: translateX(-25%) }
+        to   { transform: translateX(25%) }
+    }
+</style>
+</head>
+<body>
+
+<svg class="wave" viewBox="0 0 1440 320">
+  <path fill="#00e5ff" d="M0,160L60,170.7C120,181,240,203,360,224C480,245,600,267,720,256C840,245,960,203,1080,170.7C1200,139,1320,117,1380,106.7L1440,96L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+</svg>
+
+<svg class="wave" viewBox="0 0 1440 320">
+  <path fill="#7f00ff" d="M0,224L60,218.7C120,213,240,203,360,181.3C480,160,600,128,720,112C840,96,960,96,1080,112C1200,128,1320,160,1380,176L1440,192L1440,0L1380,0C1320,0,1200,0,1080,0C960,0,840,0,720,0C600,0,480,0,360,0C240,0,120,0,60,0L0,0Z"></path>
+</svg>
+
+</body>
+</html>
