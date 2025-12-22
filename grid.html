@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Quantum Qubit Lattice</title>
+<style>
+    html, body {
+        margin: 0;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
+    }
+    canvas {
+        display: block;
+    }
+</style>
+</head>
+<body>
+<canvas id="lattice"></canvas>
+
+<script>
+const canvas = document.getElementById("lattice");
+const ctx = canvas.getContext("2d");
+let w, h;
+
+function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+resize();
+window.onresize = resize;
+
+const nodes = [];
+const spacing = 80;
+
+for (let x = 0; x < w; x += spacing) {
+    for (let y = 0; y < h; y += spacing) {
+        nodes.push({
+            x, y,
+            glow: Math.random() * 0.5
+        });
+    }
+}
+
+function draw() {
+    ctx.clearRect(0, 0, w, h);
+
+    nodes.forEach(n => {
+        n.glow += (Math.random() - 0.5) * 0.05;
+        n.glow = Math.max(0.1, Math.min(1, n.glow));
+
+        ctx.fillStyle = `rgba(0, 200, 255, ${n.glow})`;
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    ctx.strokeStyle = "rgba(0, 150, 255, 0.15)";
+    nodes.forEach(a => {
+        nodes.forEach(b => {
+            if (Math.abs(a.x - b.x) === spacing && a.y === b.y ||
+                Math.abs(a.y - b.y) === spacing && a.x === b.x) {
+                ctx.beginPath();
+                ctx.moveTo(a.x, a.y);
+                ctx.lineTo(b.x, b.y);
+                ctx.stroke();
+            }
+        });
+    });
+
+    requestAnimationFrame(draw);
+}
+draw();
+</script>
+</body>
+</html>
