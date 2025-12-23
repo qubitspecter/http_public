@@ -29,7 +29,7 @@
     <h3 class="mt-5 fw-light">Coming Soon</h3>
     <div class="mt-4">
       <p class="small opacity-75">
-        Stay tuned for breakthroughs in quantum‑powered financial intelligence. XY
+        Stay tuned for breakthroughs in quantum‑powered financial intelligence. XYZ
       </p>
     </div>
   </div>
@@ -90,9 +90,6 @@ const material = new THREE.ShaderMaterial({
       float decoPattern = interference + ampNoise + wave3 * uCollapse;
       float y = uv.y * 2.0 - 1.0;
       float band = smoothstep(0.1, 0.0, abs(y - height));
-
-float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col -= waveDarken;
-      
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
       float mask = mix(band, bandDeco, uCollapse);
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
@@ -101,6 +98,7 @@ float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col 
       float bg = 0.15 + 0.25 * (1.0 - abs(y));
       col += vec3(0.02, 0.06, 0.1) * bg;
 
+float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col -= waveDarken;
 float collapseNorm = clamp(uCollapse / 6.0, 0.0, 1.0);
 float waveDarken = mask * collapseNorm * 0.3;
 col -= waveDarken;
