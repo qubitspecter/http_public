@@ -92,15 +92,17 @@ const material = new THREE.ShaderMaterial({
       float band = smoothstep(0.1, 0.0, abs(y - height));
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
       float mask = mix(band, bandDeco, uCollapse);
+
+float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col -= waveDarken;
+      
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
       vec3 cleanColor = mix(uColor2, uColor1, 0.5 + 0.5 * cleanWave);
       vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
-      float bg = 0.15 + 0.25 * (1.0 - abs(y));
-      col += vec3(0.02, 0.06, 0.1) * bg;
+     
+      //float bg = 0.15 + 0.25 * (1.0 - abs(y));
+      //col += vec3(0.02, 0.06, 0.1) * bg;
+      col += vec3(0.02, 0.06, 0.1) * 0.15;
 
-float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col -= waveDarken;
-
-      
       float bright = pow(mask, 3.0);
       col += vec3(0.2, 0.7, 1.0) * bright * 0.7;
       gl_FragColor = vec4(col, 1.0);
