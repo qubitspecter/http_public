@@ -76,6 +76,10 @@ const material = new THREE.ShaderMaterial({
     }
     void main() {
       vec2 uv = vUv;
+
+float drift = uCollapse * 0.02;   // adjust speed here
+uv.x += drift * uTime;            // drift fades as collapse → 0
+      
       uv.x *= 3.0;
       float t = uTime * 0.5;
       float wave1 = sin(uv.x * 6.0 - t * 2.0);
