@@ -172,9 +172,10 @@ float wave2 = sin(uv.x * 7.5 + t * 1.8);
 float interference = wave1 + wave2;
 float cleanWave = sin(uv.x * 6.0 - t * 2.0);
 //float cleanFactor = smoothstep(0.0, 0.2, 1.0 - uCollapse);
-//float height = mix(interference * 0.25, cleanWave * 0.25, cleanFactor);
-float morph = smoothstep(0.0, 1.0, uCollapse);  // 1 → 0 over collapse
-float height = mix(cleanWave * 0.25, interference * 0.25, morph);
+float cleanFactor = smoothstep(0.0, 1.0, 1.0 - uCollapse);
+
+
+float height = mix(interference * 0.25, cleanWave * 0.25, cleanFactor);
 
       float decoNoise = noise(uv * 5.0 + t);
       float phaseJitter = mix(0.0, decoNoise * 4.0, uCollapse);
@@ -187,14 +188,11 @@ float height = mix(cleanWave * 0.25, interference * 0.25, morph);
       float band = smoothstep(0.08, 0.0, abs(y - height));
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
 
-      //float mask = mix(band, bandDeco, uCollapse);
-float mask = band;
-
+      float mask = mix(band, bandDeco, uCollapse);
 
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
       vec3 cleanColor = mix(uColor2, uColor1, 0.5 + 0.5 * cleanWave);
-      //vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
-vec3 col = mix(cleanColor * mask, base * mask, morph);
+      vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
 
       float bg = 0.15 + 0.25 * (1.0 - abs(y));
       col += vec3(0.02, 0.06, 0.1) * bg;
