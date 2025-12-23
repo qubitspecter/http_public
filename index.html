@@ -29,7 +29,7 @@
     <h3 class="mt-5 fw-light">Coming Soon</h3>
     <div class="mt-4">
       <p class="small opacity-75">
-        Stay tuned for breakthroughs in quantum‑powered financial intelligence. Xaa
+        Stay tuned for breakthroughs in quantum‑powered financial intelligence.
       </p>
     </div>
   </div>
@@ -47,7 +47,6 @@ const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x000000);
 const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(0, 0, 4);
-//const geometry = new THREE.PlaneGeometry(6, 3, 400, 200);
 const geometry = new THREE.PlaneGeometry( 6, 6 * (window.innerHeight / window.innerWidth), 400, 200 );
 const uniforms = {uTime: { value: 0 }, uCollapse: { value: 0 }, uColor1: { value: new THREE.Color(0x00e5ff) }, uColor2: { value: new THREE.Color(0x0099ff) }};
 const material = new THREE.ShaderMaterial({
@@ -95,13 +94,7 @@ const material = new THREE.ShaderMaterial({
       float mask = mix(band, bandDeco, uCollapse);
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
       vec3 cleanColor = mix(uColor2, uColor1, 0.5 + 0.5 * cleanWave);
-      
-      
       vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
-      //float bg = 0.15 + 0.25 * (1.0 - abs(y));
-      //col += vec3(0.02, 0.06, 0.1) * bg;
-
-
       float bright = pow(mask, 3.0);
       col += vec3(0.2, 0.7, 1.0) * bright * 0.7;
       gl_FragColor = vec4(col, 1.0);
@@ -109,38 +102,6 @@ const material = new THREE.ShaderMaterial({
   `
 });
 const plane = new THREE.Mesh(geometry, material);
-
-  // start particles
-
-  // Spark particles
-const sparkCount = 200;
-const sparkGeometry = new THREE.BufferGeometry();
-const sparkPositions = new Float32Array(sparkCount * 3);
-const sparkSpeeds = new Float32Array(sparkCount);
-
-for (let i = 0; i < sparkCount; i++) {
-  sparkPositions[i * 3 + 0] = (Math.random() - 0.5) * 6; // x
-  sparkPositions[i * 3 + 1] = (Math.random() - 0.5) * 3; // y
-  sparkPositions[i * 3 + 2] = 0;                         // z
-  sparkSpeeds[i] = 0.005 + Math.random() * 0.01;         // upward drift
-}
-
-sparkGeometry.setAttribute("position", new THREE.BufferAttribute(sparkPositions, 3));
-
-const sparkMaterial = new THREE.PointsMaterial({
-  color: 0x66ccff,
-  size: 0.04,
-  transparent: true,
-  opacity: 0.9,
-  depthWrite: false
-});
-
-const sparks = new THREE.Points(sparkGeometry, sparkMaterial);
-scene.add(sparks);
-
-  
-  // end particles
-  
 scene.add(plane);
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
@@ -167,29 +128,6 @@ function animate() {
   else if (t < 22.0) {let p = (t - 6.0) / 16.0; p = ease(p);collapse = 6.0 - 5.0 * p;} 
   else if (t < 42.0) {let p = (t - 22.0) / 20.0; p = ease(p); collapse = 1.0 - p;} 
   else {collapse = 0.0;}
-  // ----------------- start particles
-  // Animate sparks
-const positions = sparkGeometry.attributes.position.array;
-
-for (let i = 0; i < sparkCount; i++) {
-  const idx = i * 3;
-
-  // Collapse-dependent intensity (more sparks during chaos)
-  const chaos = Math.min(collapse / 6.0, 1.0);
-
-  // Move upward
-  positions[idx + 1] += sparkSpeeds[i] * chaos;
-
-  // Respawn when off-screen
-  if (positions[idx + 1] > 1.6) {
-    positions[idx + 0] = (Math.random() - 0.5) * 6;
-    positions[idx + 1] = -1.6;
-  }
-}
-
-sparkGeometry.attributes.position.needsUpdate = true;
-
-  // ----------------- end particles
   uniforms.uCollapse.value = collapse;
   composer.render();
 }
