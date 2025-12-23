@@ -99,6 +99,12 @@ const material = new THREE.ShaderMaterial({
       vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
       float bg = 0.15 + 0.25 * (1.0 - abs(y));
       col += vec3(0.02, 0.06, 0.1) * bg;
+
+float collapseNorm = clamp(uCollapse / 6.0, 0.0, 1.0);
+float waveDarken = mask * collapseNorm * 0.3;
+col -= waveDarken;
+
+      
       float bright = pow(mask, 3.0);
       col += vec3(0.2, 0.7, 1.0) * bright * 0.7;
       gl_FragColor = vec4(col, 1.0);
