@@ -29,7 +29,7 @@
     <h3 class="mt-5 fw-light">Coming Soon</h3>
     <div class="mt-4">
       <p class="small opacity-75">
-        Stay tuned for breakthroughs in quantum‑powered financial intelligence. XYZ
+        Stay tuned for breakthroughs in quantum‑powered financial intelligence. X
       </p>
     </div>
   </div>
@@ -99,9 +99,6 @@ const material = new THREE.ShaderMaterial({
       col += vec3(0.02, 0.06, 0.1) * bg;
 
 float waveDarken = mix(0.0, 0.25, mask); // 0 → 0.25 darkness inside band col -= waveDarken;
-float collapseNorm = clamp(uCollapse / 6.0, 0.0, 1.0);
-float waveDarken = mask * collapseNorm * 0.3;
-col -= waveDarken;
 
       
       float bright = pow(mask, 3.0);
