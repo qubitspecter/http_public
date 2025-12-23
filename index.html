@@ -29,7 +29,7 @@
     <h3 class="mt-5 fw-light">Coming Soon</h3>
     <div class="mt-4">
       <p class="small opacity-75">
-        Stay tuned for breakthroughs in quantum‑powered financial intelligence. XY
+        Stay tuned for breakthroughs in quantum‑powered financial intelligence. XYZ
       </p>
     </div>
   </div>
@@ -78,7 +78,6 @@ const material = new THREE.ShaderMaterial({
       vec2 uv = vUv;
 
 float drift = uCollapse * 0.02;   // adjust speed here
-uv.x += drift * uTime;            // drift fades as collapse → 0
       
       uv.x *= 3.0;
       float t = uTime * 0.5;
@@ -135,11 +134,11 @@ function animate() {
   uniforms.uTime.value = t;
   let collapse;
   // Phase 1: extreme noise
-  if (t < 10.0) {collapse = 6.0;}
+  if (t < 6.0) {collapse = 6.0;}
   // Phase 2: chaotic wave (fade from 6 → 1 over 20 seconds)
-  else if (t < 30.0) {const p = (t - 10.0) / 20.0; collapse = 6.0 - 5.0 * p;}
+  else if (t < 22.0) {const p = (t - 6.0) / 16.0; collapse = 6.0 - 5.0 * p;}
   // Phase 3: crisp wave (fade from 1 → 0 over 30 seconds)
-  else if (t < 60.0) {const p = (t - 30.0) / 30.0;collapse = 1.0 - p;}
+  else if (t < 42.0) {const p = (t - 22.0) / 20.0;collapse = 1.0 - p;}
   else {collapse = 0.0;}
   uniforms.uCollapse.value = collapse;
   composer.render();
