@@ -4,137 +4,56 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Decoheron.com — Coming Soon</title>
-
-<!-- Bootstrap 5 for typography/layout -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
 <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    overflow: hidden;
-    background: #020617;
-  }
-
-  /* Canvas fills the background */
-  canvas {
-    position: fixed;
-    inset: 0;
-    width: 100vw;
-    height: 100vh;
-    display: block;
-}
-  /* Overlay with your landing content */
-  .hero-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 10;
-    pointer-events: none; /* so clicks pass through if you ever need that */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .hero-overlay-inner {
-    pointer-events: auto;
-    background: rgba(0, 0, 0, 0.55);
-    padding: 3rem 1.5rem;
-  }
-
-  .hero-content {
-    color: #ffffff;
-    text-align: center;
-  }
-
-  .brand-title {
-    font-size: 3rem;
-    font-weight: 700;
-    letter-spacing: 2px;
-  }
-
-  .tagline {
-    font-size: 1.25rem;
-    opacity: 0.85;
-  }
-
+  html, body {margin: 0; height: 100%; overflow: hidden; background: #020617;}
+  canvas {position: fixed; inset: 0; width: 100vw; height: 100vh; display: block;}
+  .hero-overlay {position: fixed; inset: 0; z-index: 10; pointer-events: none; display: flex; align-items: center; justify-content: center;}
+  .hero-overlay-inner {pointer-events: auto; background: rgba(0, 0, 0, 0.55); padding: 3rem 1.5rem;}
+  .hero-content {color: #ffffff; text-align: center;}
+  .brand-title {font-size: 3rem; font-weight: 700; letter-spacing: 2px;}
+  .tagline {font-size: 1.25rem; opacity: 0.85;}
   @media (max-width: 576px) {
-    .brand-title { font-size: 2.2rem; }
-    .tagline { font-size: 1rem; }
+    .brand-title { font-size: 2.2rem;}
+    .tagline { font-size: 1rem;}
   }
 </style>
-
-<!-- Your working import map -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://cdn.jsdelivr.net/npm/three@latest/build/three.module.js"
-  }
-}
-</script>
+<script type="importmap">{"imports": {"three": "https://cdn.jsdelivr.net/npm/three@latest/build/three.module.js"}}</script>
 </head>
-
 <body>
-<!-- Background canvas (unchanged from your working demo) -->
-<canvas id="c"></canvas>
-
-<!-- Hero overlay content -->
+<canvas></canvas>
 <div class="hero-overlay">
   <div class="hero-overlay-inner container hero-content">
     <h1 class="brand-title">Decoheron</h1>
     <p class="tagline mt-3">Quantum Risk Evaluation</p>
-
     <h3 class="mt-5 fw-light">Coming Soon</h3>
-
     <div class="mt-4">
       <p class="small opacity-75">
-        Stay tuned for breakthroughs in quantum‑powered financial intelligence.
+        Stay tuned for breakthroughs in quantum‑powered financial intelligence. X
       </p>
     </div>
   </div>
 </div>
-
-<!-- Optional Bootstrap JS (doesn't affect canvas) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Your working WebGL script, unchanged -->
 <script type="module">
 import * as THREE from "three";
 import { EffectComposer } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/EffectComposer.js";
 import { RenderPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "https://unpkg.com/three@0.160.0/examples/jsm/postprocessing/UnrealBloomPass.js";
-
 const canvas = document.getElementById("c");
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x020617);
-
-const camera = new THREE.PerspectiveCamera(
-  45,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  100
-);
+const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
 camera.position.set(0, 0, 4);
-
 const geometry = new THREE.PlaneGeometry(6, 3, 400, 200);
-
-const uniforms = {
-  uTime: { value: 0 },
-  uCollapse: { value: 0 },
-  uColor1: { value: new THREE.Color(0x00e5ff) },
-  uColor2: { value: new THREE.Color(0x0099ff) }
-};
-
+const uniforms = {uTime: { value: 0 }, uCollapse: { value: 0 }, uColor1: { value: new THREE.Color(0x00e5ff) }, uColor2: { value: new THREE.Color(0x0099ff) }};
 const material = new THREE.ShaderMaterial({
   uniforms,
   vertexShader: `
     varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
+    void main() {vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);}
   `,
   fragmentShader: `
     precision highp float;
@@ -143,11 +62,7 @@ const material = new THREE.ShaderMaterial({
     uniform float uCollapse;
     uniform vec3 uColor1;
     uniform vec3 uColor2;
-
-    float hash(vec2 p) {
-      return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
-    }
-
+    float hash(vec2 p) {return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);}
     float noise(vec2 p) {
       vec2 i = floor(p);
       vec2 f = fract(p);
@@ -156,69 +71,45 @@ const material = new THREE.ShaderMaterial({
       float c = hash(i + vec2(0.0, 1.0));
       float d = hash(i + vec2(1.0, 1.0));
       vec2 u = f * f * (3.0 - 2.0 * f);
-      return mix(a, b, u.x) +
-             (c - a) * u.y * (1.0 - u.x) +
-             (d - b) * u.x * u.y;
+      return mix(a, b, u.x) + (c - a) * u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
     }
-
     void main() {
       vec2 uv = vUv;
       uv.x *= 3.0;
-
       float t = uTime * 0.5;
-
-float wave1 = sin(uv.x * 6.0 - t * 2.0);
-float wave2 = sin(uv.x * 7.5 + t * 1.8);
-float interference = wave1 + wave2;
-float cleanWave = sin(uv.x * 6.0 - t * 2.0);
-//float cleanFactor = smoothstep(0.0, 0.2, 1.0 - uCollapse);
-float cleanFactor = smoothstep(0.0, 1.0, 1.0 - uCollapse);
-
-
-float height = mix(interference * 0.25, cleanWave * 0.25, cleanFactor);
-
+      float wave1 = sin(uv.x * 6.0 - t * 2.0);
+      float wave2 = sin(uv.x * 7.5 + t * 1.8);
+      float interference = wave1 + wave2;
+      float cleanWave = sin(uv.x * 6.0 - t * 2.0);
+      //float cleanFactor = smoothstep(0.0, 0.2, 1.0 - uCollapse);
+      float cleanFactor = smoothstep(0.0, 1.0, 1.0 - uCollapse);
+      float height = mix(interference * 0.25, cleanWave * 0.25, cleanFactor);
       float decoNoise = noise(uv * 5.0 + t);
       float phaseJitter = mix(0.0, decoNoise * 4.0, uCollapse);
       float ampNoise = mix(0.0, (decoNoise - 0.5) * 2.0, uCollapse);
-
       float wave3 = sin(uv.x * 9.0 + t * 2.6 + phaseJitter);
       float decoPattern = interference + ampNoise + wave3 * uCollapse;
-
       float y = uv.y * 2.0 - 1.0;
       float band = smoothstep(0.08, 0.0, abs(y - height));
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
-
       float mask = mix(band, bandDeco, uCollapse);
-
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
       vec3 cleanColor = mix(uColor2, uColor1, 0.5 + 0.5 * cleanWave);
       vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
-
       float bg = 0.15 + 0.25 * (1.0 - abs(y));
       col += vec3(0.02, 0.06, 0.1) * bg;
-
       float bright = pow(mask, 3.0);
       col += vec3(0.2, 0.7, 1.0) * bright * 0.7;
-
       gl_FragColor = vec4(col, 1.0);
     }
   `
 });
-
 const plane = new THREE.Mesh(geometry, material);
 scene.add(plane);
-
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-
-const bloomPass = new UnrealBloomPass(
-  new THREE.Vector2(window.innerWidth, window.innerHeight),
-  1.2,
-  0.4,
-  0.9
-);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.2, 0.4, 0.9);
 composer.addPass(bloomPass);
-
 function resize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
@@ -229,45 +120,23 @@ function resize() {
 }
 window.addEventListener("resize", resize);
 resize();
-
 let start = performance.now();
-
 function animate() {
   requestAnimationFrame(animate);
   const t = (performance.now() - start) / 1000;
-
   uniforms.uTime.value = t;
-  // uniforms.uCollapse.value = Math.min(1.0, t / 17.0); //normal
-  // uniforms.uCollapse.value = t / 12.0; // total chaos
-
- let collapse;
-
-if (t < 10.0) {
-    // Phase 1: extreme noise
-    collapse = 6.0;
-}
-else if (t < 30.0) {
-    // Phase 2: chaotic wave (fade from 6 → 1 over 20 seconds)
-    const p = (t - 10.0) / 20.0;   // 0 → 1
-    collapse = 6.0 - 5.0 * p;      // 6 → 1
-}
-else if (t < 60.0) {
-    // Phase 3: crisp wave (fade from 1 → 0 over 30 seconds)
-    const p = (t - 30.0) / 30.0;   // 0 → 1
-    collapse = 1.0 - p;            // 1 → 0
-}
-else {
-    collapse = 0.0;
-}
-
-uniforms.uCollapse.value = collapse;
-
-
-
+  let collapse;
+  // Phase 1: extreme noise
+  if (t < 10.0) {collapse = 6.0;}
+  // Phase 2: chaotic wave (fade from 6 → 1 over 20 seconds)
+  else if (t < 30.0) {const p = (t - 10.0) / 20.0; collapse = 6.0 - 5.0 * p;}
+  // Phase 3: crisp wave (fade from 1 → 0 over 30 seconds)
+  else if (t < 60.0) {const p = (t - 30.0) / 30.0;collapse = 1.0 - p;}
+  else {collapse = 0.0;}
+  uniforms.uCollapse.value = collapse;
   composer.render();
 }
 animate();
 </script>
-
 </body>
 </html>
