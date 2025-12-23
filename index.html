@@ -81,7 +81,6 @@ const material = new THREE.ShaderMaterial({
       float wave2 = sin(uv.x * 7.5 + t * 1.8);
       float interference = wave1 + wave2;
       float cleanWave = sin(uv.x * 6.0 - t * 2.0);
-      //float cleanFactor = smoothstep(0.0, 0.2, 1.0 - uCollapse);
       float cleanFactor = smoothstep(0.0, 1.0, 1.0 - uCollapse);
       float height = mix(interference * 0.25, cleanWave * 0.25, cleanFactor);
       float decoNoise = noise(uv * 5.0 + t);
@@ -90,44 +89,13 @@ const material = new THREE.ShaderMaterial({
       float wave3 = sin(uv.x * 9.0 + t * 2.6 + phaseJitter);
       float decoPattern = interference + ampNoise + wave3 * uCollapse;
       float y = uv.y * 2.0 - 1.0;
-      float band = smoothstep(0.08, 0.0, abs(y - height));
+      //float band = smoothstep(0.08, 0.0, abs(y - height));
+      float band = smoothstep(0.25, 0.0, abs(y - height));
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
       float mask = mix(band, bandDeco, uCollapse);
-
-//------------------------------------------------------
-// Quantum Interference Grid
-//------------------------------------------------------
-
-// Grid frequency (higher = tighter grid)
-float gridFreq = 40.0;
-
-// Horizontal and vertical grid lines
-float gx = abs(sin(uv.x * gridFreq));
-float gy = abs(sin(uv.y * gridFreq));
-
-// Combine them
-float grid = min(gx, gy);
-
-// Make it subtle
-grid = pow(grid, 8.0);
-
-// Modulate by chaos (strong when collapse is high)
-float chaos = smoothstep(0.0, 1.0, uCollapse);
-grid *= chaos * 0.35;   // adjust intensity here
-
-// Add slight noise shimmer
-grid *= 0.5 + 0.5 * noise(uv * 8.0 + uTime * 0.3);
-
-//------------------------------------------------------
-// Quantum Interference Grid
-//------------------------------------------------------
-      
       vec3 base = mix(uColor2, uColor1, 0.5 + 0.5 * decoPattern);
       vec3 cleanColor = mix(uColor2, uColor1, 0.5 + 0.5 * cleanWave);
       vec3 col = mix(base * mask, cleanColor * mask, cleanFactor);
-      // grid color
-      col += vec3(0.2, 0.5, 1.0) * grid;
-      // grid color
       float bg = 0.15 + 0.25 * (1.0 - abs(y));
       col += vec3(0.02, 0.06, 0.1) * bg;
       float bright = pow(mask, 3.0);
