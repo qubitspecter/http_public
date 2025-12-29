@@ -88,7 +88,10 @@ const material = new THREE.ShaderMaterial({
       float ampNoise = mix(0.0, (decoNoise - 0.5) * 2.0, uCollapse);
       float wave3 = sin(uv.x * 9.0 + t * 2.6 + phaseJitter);
       float decoPattern = interference + ampNoise + wave3 * uCollapse;
-      float y = uv.y * 2.0 - 1.0;
+
+      float y = (uv.y * 2.0 - 1.0) * 0.8;
+      //float y = uv.y * 2.0 - 1.0;
+      
       float band = smoothstep(0.1, 0.0, abs(y - height));
       float bandDeco = smoothstep(0.2, 0.0, abs(y - decoPattern * 0.25));
       float mask = mix(band, bandDeco, uCollapse);
